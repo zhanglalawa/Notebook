@@ -1,5 +1,8 @@
 package array;
-
+/*
+ * 自己实现的是一个ArrayList
+ * 考虑到了扩容
+ */
 public class Array<E> {
 	private E[] data;
 	private int size;
@@ -164,31 +167,31 @@ public class Array<E> {
 		data = newArray;
 	}
 
+	// 测试
 	public static void main(String[] args) {
+		Array<Integer> arr = new Array<>();
+		for (int i = 0; i < 10; i++)
+			arr.addLast(i);
+		System.out.println(arr);
 
-		        Array<Integer> arr = new Array<>();
-		        for(int i = 0 ; i < 10 ; i ++)
-		            arr.addLast(i);
-		        System.out.println(arr);
+		arr.add(1, 100);
+		System.out.println(arr);
 
-		        arr.add(1, 100);
-		        System.out.println(arr);
+		arr.addFirst(-1);
+		System.out.println(arr);
 
-		        arr.addFirst(-1);
-		        System.out.println(arr);
+		arr.remove(2);
+		System.out.println(arr);
 
-		        arr.remove(2);
-		        System.out.println(arr);
+		arr.removeElement(4);
+		System.out.println(arr);
 
-		        arr.removeElement(4);
-		        System.out.println(arr);
+		arr.removeFirst();
+		System.out.println(arr);
 
-		        arr.removeFirst();
-		        System.out.println(arr);
-
-		        for(int i = 0 ; i < 4 ; i ++){
-		            arr.removeFirst();
-		            System.out.println(arr);
-		        }
+		for (int i = 0; i < 4; i++) {
+			arr.removeFirst();
+			System.out.println(arr);
+		}
 	}
 }
