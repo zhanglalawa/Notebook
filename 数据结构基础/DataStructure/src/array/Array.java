@@ -1,4 +1,5 @@
 package array;
+
 /*
  * 自己实现的是一个ArrayList
  * 考虑到了扩容
@@ -7,8 +8,8 @@ public class Array<E> {
 	private E[] data;
 	private int size;
 
-	public Array(int Capacity) {
-		data = (E[]) new Object[Capacity];
+	public Array(int capacity) {
+		data = (E[]) new Object[capacity];
 		size = 0;
 	}
 
@@ -38,6 +39,14 @@ public class Array<E> {
 			throw new IllegalArgumentException("Get failed. Require index >= 0 and index < size.");
 		}
 		return data[index];
+	}
+
+	public E getFirst() {
+		return get(0);
+	}
+
+	public E getLast() {
+		return get(size - 1);
 	}
 
 	// 设置第index索引处的值
@@ -98,12 +107,14 @@ public class Array<E> {
 		}
 		// 因为要返回它，所以需要这一句
 		E retElement = data[index];
-		for (int i = index; i < size; i++) {
+		for (int i = index; i < size - 1; i++) {
 			data[i] = data[i + 1];
 		}
-		data[size] = null;// 这一步是关键的防止内存泄漏
 		// 最后不要忘了size--
 		size--;
+		
+		data[size] = null;// 这一步是关键的防止内存泄漏
+		
 		// 如果现在里面的实际数量到了data.length的四分之一了，就缩容一半，一定要判断data.length缩容之后不能是0！
 		if (size == data.length / 4 && data.length / 2 != 0) {
 			resize(data.length / 2);
