@@ -66,7 +66,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		}
 	}
 
-	// 第二种递归写法
+	// 第二种递归写法 方法返回加入后的新的二分搜索树的根
 	// 我们让方法进入下一个节点
 	// 如果这个节点就是空的，那就新建一个节点返回它 递归结束
 	// 如果不为空，那就需要继续递归
@@ -87,19 +87,34 @@ public class BinarySearchTree<E extends Comparable<E>> {
 	}
 
 	// 非递归写法
-	private void addNotRecursively(Node root, E e) {
-		Node curr = root;
-		while (curr != null && e.compareTo(curr.e) != 0) {
-			if (e.compareTo(curr.e) > 0) {
-				curr = curr.right;
+	private Node addNotRecursively(Node root, E e) {
+		if (root == null) {
+			size ++;
+			return new Node(e);
+		}
+		
+		Node prev = root;
+		while (e.compareTo(prev.e) != 0) {
+			if (e.compareTo(prev.e) > 0) {
+				if (prev.right != null) {
+					prev = prev.right;
+				}else {
+					prev.right = new Node(e);
+					size ++;
+					break;
+				}
 			} else {
-				curr = curr.left;
+				if (prev.left!=null) {
+					prev = prev.left;
+				}else {
+					prev.left = new Node(e);
+					size ++;
+					break;
+				}
 			}
 		}
-		if (curr == null) {
-			curr = new Node(e);
-			size++;
-		}
+		
+		return root;
 	}
 
 	public boolean contains(E e) {
@@ -228,27 +243,79 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		return node.e;
 	}
 
+	// 下面是递归写法
 	public E getMax() {
-		return getMax(treeRoot);
-	}
-	public E getMax(Node root) {
-		if (root.right == null) {
-			return root.e;
+		if (size == 0) {
+			throw new IllegalArgumentException("BST is empty");
 		}
-		
+		return getMax(treeRoot).e;
+	}
+
+	public Node getMax(Node root) {
+		if (root.right == null) {
+			return root;
+		}
+
 		return getMax(root.right);
 	}
-	
+
 	public E getMin() {
-		return getMin(treeRoot);
-	}
-	public E getMin(Node root) {
-		if (root.left == null) {
-			return root.e;
+		if (size == 0) {
+			throw new IllegalArgumentException("BST is empty");
 		}
-		
+		return getMin(treeRoot).e;
+	}
+
+	public Node getMin(Node root) {
+		if (root.left == null) {
+			return root;
+		}
+
 		return getMin(root.left);
 	}
+
+	// 从二分搜索树中删除最小结点
+	// 返回删最小值
+	public E removeMin() {
+		E ret = getMin();
+		treeRoot = removeMin(treeRoot);
+		return ret;
+	}
+
+	// 从二分搜索树中删除最小节点
+	// 返回删除结点之后的二分搜索树的根
+	private Node removeMin(Node root) {
+		if (root.left == null) {
+			Node rightNode = root.right;
+			root.right = null;
+			size--;
+			return rightNode;
+		}
+
+		root.left = removeMin(root.left);
+		return root;
+	}
+
+	// 从二分搜索树中删除最大结点
+	// 返回最大值
+	public E removeMax() {
+		E ret = getMax();
+		treeRoot = removeMax(treeRoot);
+		return ret;
+	}
+
+	// 从二分搜索树中删除最大结点
+	// 返回删之后的二分搜索树的根
+	private Node removeMax(Node root) {
+		if (root.right == null) {
+			Node leftNode = root.left;
+			root.left = null;
+			return leftNode;
+		}
+		root.right = removeMax(root.right);
+		return root;
+	}
+
 	public String toString() {
 		StringBuilder res = new StringBuilder();
 		generateBSTString(treeRoot, 0, res);
@@ -276,14 +343,15 @@ public class BinarySearchTree<E extends Comparable<E>> {
 
 	public static void main(String args[]) {
 		BinarySearchTree<Integer> binarySearchTree = new BinarySearchTree<>();
-		int[] nums = { 5, 3, 6, 8, 4, 2 };
+		int[] nums = { 3, 6, 8, 4, 2 };
 		for (int num : nums) {
 			binarySearchTree.add(num);
 		}
+		System.out.println(binarySearchTree);
 		// binarySearchTree.preOrderNotRecursively(binarySearchTree.treeRoot);
 		System.out.println(binarySearchTree.getMax());
 		System.out.println(binarySearchTree.getMin());
-		System.out.println(binarySearchTree);
+		
 	}
 
 }
