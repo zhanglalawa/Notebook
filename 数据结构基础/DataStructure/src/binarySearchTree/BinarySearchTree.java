@@ -89,31 +89,31 @@ public class BinarySearchTree<E extends Comparable<E>> {
 	// 非递归写法
 	private Node addNotRecursively(Node root, E e) {
 		if (root == null) {
-			size ++;
+			size++;
 			return new Node(e);
 		}
-		
+
 		Node prev = root;
 		while (e.compareTo(prev.e) != 0) {
 			if (e.compareTo(prev.e) > 0) {
 				if (prev.right != null) {
 					prev = prev.right;
-				}else {
+				} else {
 					prev.right = new Node(e);
-					size ++;
+					size++;
 					break;
 				}
 			} else {
-				if (prev.left!=null) {
+				if (prev.left != null) {
 					prev = prev.left;
-				}else {
+				} else {
 					prev.left = new Node(e);
-					size ++;
+					size++;
 					break;
 				}
 			}
 		}
-		
+
 		return root;
 	}
 
@@ -201,6 +201,8 @@ public class BinarySearchTree<E extends Comparable<E>> {
 				stack.push(node.left);
 			}
 		}
+		
+		
 	}
 
 	public void levelOrder() {
@@ -316,6 +318,65 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		return root;
 	}
 
+	// 删除指定值的节点
+	public E removeNode(E e) {
+		if (size == 0) {
+			throw new IllegalArgumentException("BST is empty");
+		}
+
+		return removeNode(treeRoot, e).e;
+	}
+
+	// 删除以root为根的树中值为e的节点
+	// 并且返回删除后的树的根节点
+	private Node removeNode(Node root, E e) {
+		if (e.compareTo(root.e) > 0) {
+			root.right = removeNode(root.right, e);
+			return root;
+		}
+
+		if (e.compareTo(root.e) < 0) {
+			root.left = removeNode(root.left, e);
+			return root;
+		}
+
+		// 下面是如果值和节点的值相等，那就要进行删除操作了
+
+		// 最简单的两种情况
+		// 如果左孩子为空，就获取它的右孩子，让要删除的这个节点和整棵树脱离关系
+		// 然后返回它的右孩子
+		if (root.left == null) {
+			Node rightNode = root.right;
+			root.right = null;
+			size--;
+			return rightNode;
+		}
+
+		// 如果有孩子为空，则同理，这里和我们removeMax removeMin 极其相似
+		if (root.right == null) {
+			Node leftNode = root.left;
+			root.left = null;
+			size--;
+			return leftNode;
+		}
+
+		// 最后是左右孩子都不为空，这是最麻烦的一种
+		// 我们需要找到待删除节点的右子树中的最小节点（又或者说是待删除节点左子树的最大结点）
+		// 只有上面两种结点是符合要求的，我们用他们来替换这个待删除节点
+		
+		Node successor = getMin(root.right);//这里我们找右子树的最小节点，就是替换者
+		successor.left = root.left;//替换当然是让这个最小节点的左孩子等于原来节点的左孩子，右孩子等于原来节点的右孩子，左孩子直接赋值
+		//右孩子我们当然是需要得到已经删除掉这个替换着的右子树啊，所以有用到我们的removeMin方法
+		successor.right = removeMin(root.right);
+		
+		//当然我们还需要把原来的节点和我们的二叉树脱离关系
+		root.left = null;
+		root.right = null;
+		
+		//最后还有一个问题，我们是否需要维护size--，答曰不用，因为removeMin里面已经进行了删除操作了！我们的工作只是替换，所以不能再次进行size--
+		return successor;
+	}
+
 	public String toString() {
 		StringBuilder res = new StringBuilder();
 		generateBSTString(treeRoot, 0, res);
@@ -351,7 +412,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		// binarySearchTree.preOrderNotRecursively(binarySearchTree.treeRoot);
 		System.out.println(binarySearchTree.getMax());
 		System.out.println(binarySearchTree.getMin());
-		
+
 	}
 
 }
