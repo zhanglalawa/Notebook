@@ -18,6 +18,16 @@ public class Array<E> {
 		this(10);
 	}
 
+	public Array(E[] array) {
+		data = (E[]) new Object[array.length];
+
+		for (int i = 0; i < array.length; i++) {
+			data[i] = array[i];
+		}
+
+		size = array.length;
+	}
+
 	// 获得容量
 	public int getCapacity() {
 		return data.length;
@@ -112,9 +122,9 @@ public class Array<E> {
 		}
 		// 最后不要忘了size--
 		size--;
-		
+
 		data[size] = null;// 这一步是关键的防止内存泄漏
-		
+
 		// 如果现在里面的实际数量到了data.length的四分之一了，就缩容一半，一定要判断data.length缩容之后不能是0！
 		if (size == data.length / 4 && data.length / 2 != 0) {
 			resize(data.length / 2);
@@ -150,6 +160,12 @@ public class Array<E> {
 		if (index != -1) {
 			remove(index);
 		}
+	}
+
+	public void swap(int i, int j) {
+		E tmp = data[i];
+		data[i] = data[j];
+		data[j] = tmp;
 	}
 
 	// 重写toString展示数组
