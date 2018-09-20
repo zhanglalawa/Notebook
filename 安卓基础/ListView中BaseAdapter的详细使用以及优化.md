@@ -249,7 +249,7 @@ public class TestAdapter extends BaseAdapter {
 ```
 这里也贴一下setTag和getTag的源码，看注释已经很清楚这是干什么的方法了：
 
-```
+```Java
 public class View implements Drawable.Callback, KeyEvent.Callback,
         AccessibilityEventSource {
         ...
@@ -296,3 +296,113 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
 ## 四、总结
 ![BaseAdapter总结](https://upload-images.jianshu.io/upload_images/13852523-7f56cd65df2a7415.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+## 补充ArrayAdapter
+ArrayAdapter继承自BaseAdapter，用起来比BaseAdapter更方便一些。首先它里面完成了数据源的封装，不再需要我们自己去建立List，可以看一下源码中有一行：
+
+```Java
+/**
+     * Contains the list of objects that represent the data of this ArrayAdapter.
+     * The content of this list is referred to as "the array" in the documentation.
+     */
+    private List<T> mObjects;
+```
+其次它直接实现了泛型的Adapter，我们可以传递泛型参数决定数据源的类型。
+
+我们建立自己的ArrayAdapter，构造器我们常用的是这个三个参数的构造器：
+
+```Java
+public class MyArrayAdapter extends ArrayAdapter<ItemBean> {
+    private int resourceId;
+
+    public MyArrayAdapter(@NonNull Context context, int resource, @NonNull List<ItemBean> objects) {
+        super(context, resource, objects);
+        resourceId = resource;
+    }
+    ...
+}
+```
+这里面调用的super的构造器，会把数据源objects传递给mObjects，resource是子项布局的ID，由于下面我们要用inflate去加载成view对象，所以这里要保存一下这个resourceId.而context也会传给mContext。
+要保证基本的运行的话，只需要重写getView，重写的方法以及ViewHolder的优化和ListView大同小异:
+
+
+```Java
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        ItemBean item = getItem(position);
+        ViewHolder viewHolder = null;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.itemImage = (ImageView)convertView.findViewById(R.id.item_image);
+            viewHolder.title = (TextView)convertView.findViewById(R.id.title);
+            viewHolder.content = (TextView)convertView.findViewById(R.id.content);
+            convertView.setTag(viewHolder);
+        }else {
+            viewHolder = (ViewHolder)convertView.getTag();
+        }
+        viewHolder.title.setText(item.getItemTitle());
+        viewHolder.content.setText(item.getItemContent());
+        viewHolder.itemImage.setImageResource(item.getItemImageResourceId());
+
+        return convertView;
+    }
+
+    class ViewHolder{
+        public ImageView itemImage;
+        public TextView title;
+        public TextView content;
+    }
+}
+```
+ArrayAdapter也给我们提供了getItem和getContext两个方法。其他都是和ListView中的重写方法完全一致的。
+
+最后的代码就更不用说了：
+
+```Java
+ArrayAdapter<ItemBean> adapter = new MyArrayAdapter(this,R.layout.item,list);
+        listView.setAdapter(adapter);
+```
+## 补充ListView的的各项点击事件
+点击事件在setOnItemClickListener里面注册，和Button很类似：
+
+```Java
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ItemBean item = list.get(position);
+                Toast.makeText(MainActivity.this,item.getItemTitle(),Toast.LENGTH_SHORT).show();
+            }
+        });
+```
+## 补充ListView的滑动监听
+滑动监听:
+
+```
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                switch (scrollState){
+                    //停止滑动了
+                    case SCROLL_STATE_IDLE:
+                        Log.d("fuck","The view is not scrolling. Note navigating the list using the trackball counts as " +
+                                "being in the idle state since these transitions are not animated.");
+                        break;
+                    //正在滑动且手指还在屏幕上
+                    case SCROLL_STATE_TOUCH_SCROLL:
+                        Log.d("fuck","The user is scrolling using touch, and their finger is still on the screen");
+                        break;
+                    //当用户由于之前划动屏幕并抬起手指，屏幕产生惯性滑动时
+                    case SCROLL_STATE_FLING:
+                        Log.d("fuck","The user had previously been scrolling using touch and had performed a fling. The " +
+                                "animation is now coasting to a stop");
+                        list.add(new ItemBean(R.mipmap.ic_launcher,
+                            "new title",
+                            "new content"));
+                        adapter.notifyDataSetChanged();
+                        break;
+                }
+            }
+```
+log里面打印的内容是三种scrollState在源码中的注释。这里在惯性滑动事件中加了一个新增ListView条目的逻辑。。虽然实际场景很不合理。应该是下拉刷新之类的，但这里只是演示作用，注意list添加完之后，要用adapter的notifyDataSetChanged去通知条目发生改变了，才能更新listView。

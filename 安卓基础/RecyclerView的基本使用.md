@@ -102,3 +102,6 @@ ListView中并没有这个setLayoutManager的方法，从名字上我们也能�
 ```
 运行结果如下：
 ![image.png](https://upload-images.jianshu.io/upload_images/13852523-9c76a2c7b78a1ef8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+## 最后再提一下RecyclerView的点击事件
+RecyclerView并不像ListView那样给我们提供了专门的onItemClickListener,但是我们可以在Adapter里面自己去注册view的点击事件，例如holder.title.setOnClickListener这样按照最一般的view的点击事件去注册。可以看自己当时知乎上写的文章的最后。。（终于用了自己文章一次。。）
+[RecyclerView用法](https://zhuanlan.zhihu.com/p/37381538)
