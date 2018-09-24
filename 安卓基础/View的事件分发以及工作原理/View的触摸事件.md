@@ -179,10 +179,10 @@ mDecor不用想都知道是什么。。这是源码中的注释。
 ```
 而从源码中也可以看到public class DecorView extends FrameLayout，DecorView是个FrameLayout,这个超类FrameLayout中并没有重写dispatchTouchEvent，所以实际上是在调用ViewGroup的dispatch，我们将会在下一个部分分析。
 
-这样我们的事件传递从Activity到Window再到DecorView，它是我们用setContentView设置的顶级View的父容器，那么最终事件也肯定会由DecorView交给顶级View。顶级View一般来说都是ViewGroup。
+这样我们的事件传递从Activity到Window再到DecorView，它是我们用setContentView设置的顶级View的父容器，那么最终事件也肯定会交给顶级View——DecorView。
 
 #### 2.顶级View对点击事件的分发过程
-事实上我们在1.2.2中描述的dispatch的过程基本上是清晰的，不过当时我们用的是简单的伪代码来描述，下面我们主要从源码角度分析一下，这是ViewGroup的dispatchTouchEvent方法（是一般的顶级View的dispatch方法，也是DecorView的）比较长，逐段摘取分析：
+事实上我们在1.2.2中描述的dispatch的过程基本上是清晰的，不过当时我们用的是简单的伪代码来描述，下面我们主要从源码角度分析一下，这是ViewGroup（DecorView是个FrameLayout，那自然就是ViewGroup了）的dispatchTouchEvent方法比较长，逐段摘取分析：
 
 ```Java
             // Check for interception.
