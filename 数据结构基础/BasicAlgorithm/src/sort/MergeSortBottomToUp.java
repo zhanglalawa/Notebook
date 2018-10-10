@@ -6,7 +6,7 @@ public class MergeSortBottomToUp {
 		for(int sz = 1; sz <= n; sz += sz) {
 			for(int i = 0; i + sz < n; i += 2*sz ) {
 				//nums[i,....,i+sz-1] nums[i+sz,...,i+2*sz-1]
-				MergeSort.merge(nums, i, i + sz - 1, Math.min(n-1, i+2*sz-1));
+				MergeSort.merge(nums, i, i + sz - 1, Math.min(n-1, i+2*sz-1 ));
 			}
 		}
 	}
