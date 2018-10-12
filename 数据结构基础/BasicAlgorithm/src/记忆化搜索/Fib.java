@@ -25,11 +25,11 @@ public class Fib {
 	 * 最简单的动态规划
 	 */
 	public static void fib2(int n) {
-		memory[0]=1;
-		memory[1]=1;
-		
-		for(int i = 2; i <= n; i++) {
-			memory[i] = memory[i-1] + memory[i-2];
+		memory[0] = 1;
+		memory[1] = 1;
+
+		for (int i = 2; i <= n; i++) {
+			memory[i] = memory[i - 1] + memory[i - 2];
 		}
 	}
 
@@ -41,4 +41,7 @@ public class Fib {
 		for (long number : memory)
 			System.out.println(number);
 	}
+
+
+
 }
