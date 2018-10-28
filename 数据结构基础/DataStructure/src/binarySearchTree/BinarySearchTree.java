@@ -85,7 +85,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		}
 		return root;
 	}
-
+	
 	// 非递归写法
 	private Node addNotRecursively(Node root, E e) {
 		if (root == null) {
@@ -312,6 +312,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
 		if (root.right == null) {
 			Node leftNode = root.left;
 			root.left = null;
+			size--;
 			return leftNode;
 		}
 		root.right = removeMax(root.right);
@@ -319,17 +320,17 @@ public class BinarySearchTree<E extends Comparable<E>> {
 	}
 
 	// 删除指定值的节点
-	public E removeNode(E e) {
-		if (size == 0) {
-			throw new IllegalArgumentException("BST is empty");
-		}
-
-		return removeNode(treeRoot, e).e;
+	public void removeNode(E e) {
+		treeRoot = removeNode(treeRoot, e);
 	}
 
 	// 删除以root为根的树中值为e的节点
 	// 并且返回删除后的树的根节点
 	private Node removeNode(Node root, E e) {
+		if (root == null) {
+			return null;
+		}
+		
 		if (e.compareTo(root.e) > 0) {
 			root.right = removeNode(root.right, e);
 			return root;

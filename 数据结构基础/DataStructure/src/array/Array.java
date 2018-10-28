@@ -1,5 +1,6 @@
 package array;
 
+
 /*
  * 自己实现的是一个ArrayList
  * 考虑到了扩容
